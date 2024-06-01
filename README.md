@@ -6,13 +6,15 @@
 
 > All API endpoints require a valid token to be passed in the `Authorization` header. The token can be obtained from the [User Auth](https://github.com/KhawarMehfooz/pos-user-auth-api) API.
 
-### Get All Categories
+### For Categories
+
+#### Get All Categories
 
 ```http
 GET /categories
 ```
 
-### Create a New Category
+#### Create a New Category
 
 ```http
 POST /categories
@@ -22,7 +24,7 @@ POST /categories
 | :------------- | :------- | :-------------------------- |
 | `categoryName` | `string` | **Required**. Category name |
 
-### Get a Category
+#### Get a Category
 
 ```http
 GET /category/:id
@@ -32,7 +34,7 @@ GET /category/:id
 | :-------- | :------- | :------------------------ |
 | `id`      | `string` | **Required**. Category ID |
 
-### Update a Category
+#### Update a Category
 
 ```http
 PUT /category/:id
@@ -42,7 +44,7 @@ PUT /category/:id
 | :------------- | :------- | :-------------------------- |
 | `categoryName` | `string` | **Required**. Category name |
 
-### Delete a Category
+#### Delete a Category
 
 ```http
 DELETE /category/:id
@@ -51,3 +53,61 @@ DELETE /category/:id
 | Parameter | Type     | Description               |
 | :-------- | :------- | :------------------------ |
 | `id`      | `string` | **Required**. Category ID |
+
+### For Products
+
+#### Get All Products
+
+```http
+GET /products
+```
+
+#### Create a New Product
+
+```http
+POST /products
+```
+
+| Parameter    | Type     | Description                               |
+| :----------- | :------- | :---------------------------------------- |
+| `name`       | `string` | **Required**. Product name                |
+| `price`      | `number` | **Required**. Product price               |
+| `quantity`   | `number` | **Required**. Product stock               |
+| `category`   | `string` | **Required**. Category ID                 |
+| `image`      | `string` | **Required**. Product image               |
+| `stockCheck` | `number` | **Required**. Stock check status [0 or 1] |
+
+#### Get a Product
+
+```http
+GET /product/:id
+```
+
+| Parameter | Type     | Description              |
+| :-------- | :------- | :----------------------- |
+| `id`      | `string` | **Required**. Product ID |
+
+#### Update a Product
+
+```http
+PUT /product/:id
+```
+
+| Parameter    | Type     | Description                               |
+| :----------- | :------- | :---------------------------------------- |
+| `name`       | `string` | **Required**. Product name                |
+| `price`      | `number` | **Required**. Product price               |
+| `quantity`   | `number` | **Required**. Product stock               |
+| `category`   | `string` | **Required**. Category ID                 |
+| `image`      | `string` | **Required**. Product image               |
+| `stockCheck` | `number` | **Required**. Stock check status [0 or 1] |
+
+#### Delete a Product
+
+```http
+DELETE /product/:id
+```
+
+| Parameter | Type     | Description              |
+| :-------- | :------- | :----------------------- |
+| `id`      | `string` | **Required**. Product ID |
