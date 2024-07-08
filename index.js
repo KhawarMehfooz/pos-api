@@ -16,12 +16,14 @@ app.use(express.json());
 
 const categoryRoutes = require("./routes/category");
 const inventoryRoutes = require("./routes/inventory");
+const customerRoutes = require('./routes/customer')
 const { authenticateToken } = require("./middlewares/auth");
 
 app.use(authenticateToken);
 
 app.use("/", categoryRoutes);
 app.use("/", inventoryRoutes);
+app.use("/",customerRoutes)
 
 app.get("/", (req, res) => {
   res.send("Hello World");
