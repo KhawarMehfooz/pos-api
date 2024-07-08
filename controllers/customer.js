@@ -5,9 +5,9 @@ const Customer = require('../models/Customer')
 const getAllCustomers = async(req,res)=>{
     try{
         const customers = await Customer.find();
-        res.json(customers);
+        return res.json(customers);
     }catch(err){
-        res.status(500).json({message: err.message})
+       return res.status(500).json({message: err.message})
     }
 }
 
@@ -21,14 +21,71 @@ const createNewCustomer = async(req,res)=>{
     
     try{
         const newCustomer = await customer.save();
-        res.status(201).json(newCustomer)
+        return res.status(201).json(newCustomer)
 
     }catch(err){
-        res.status(400).json({message: err.message})
+       return res.status(400).json({message: err.message})
+    }
+}
+
+const getSingleCustomer = async(req,res)=>{
+    if(!mongoose.Types.ObjectId.isValid(req.params.id)){
+        return res.status(400).json({message: 'Invalid id format'})
+    }
+    try{
+        const customer = await Customer.findById(req.params.id)
+        if(!customer){
+            return res.status(404).json({message: "Customer not found"})
+        }
+        return res.json(customer)
+    }catch(err){
+        return res.status(500).json({message: err.message})
+    }
+}
+
+const editCustomer = async(req,res)=>{
+    if(!mongoose.Types.ObjectId.isValid(req.params.id)){
+        return res.status(400).json({message: "Invalid id format"})
+    }
+    try{
+        const customer = await Customer.findById(req.params.id)
+        if(!customer){
+            return res.status(404).json({message: "Customer not found"})
+        }
+        customer.name = req.body.customerName || customer.name
+        customer.phone = req.body.customerPhone || customer.phone
+        customer.address = req.body.customerAddress || customer.address
+
+        const updatedCustomer = await customer.save()
+        return res.json(updatedCustomer)
+    }catch(err){
+        return res.status(400).json({message: err.message})
+    }
+}
+
+const deleteCustomer = async(req,res)=>{
+    if(!mongoose.Types.ObjectId.isValid(req.params.id)){
+        return res.status(400).json({message: "Invalid id format"})
+    }
+    try{
+        const customer = await Customer.findById(req.params.id)
+        if(!customer){
+            return res.status(404).json({message: "Customer not found"})
+        }
+        const result = await customer.deleteOne({_id: req.params.id})
+        if(result.deletedCount === 0){
+            return res.status(404).json({message: "Customer not found"})
+        }
+        return res.json({message: "Customer deleted successfully"})
+    }catch(err){
+        return res.status(500).json({message: err.message})
     }
 }
 
 module.exports = {
     getAllCustomers,
-    createNewCustomer
+    createNewCustomer,
+    getSingleCustomer,
+    editCustomer,
+    deleteCustomer
 }
