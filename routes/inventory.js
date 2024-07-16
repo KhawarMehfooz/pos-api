@@ -50,7 +50,7 @@ router.get("/products", getAllProducts);
 router.post("/products", upload.single("image"), createNewProduct);
 router.get("/product/:id", getProductById);
 router.get("/products/category/:id", getProductsByCategory);
-router.put("/product/:id", editProduct);
+router.put("/product/:id",upload.single('image'), editProduct);
 router.delete("/product/:id", deleteProduct);
 
 module.exports = router;

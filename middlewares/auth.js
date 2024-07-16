@@ -7,7 +7,7 @@ const authenticateToken = async (req, res, next) => {
 
   try {
     const response = await axios.post(
-      `${process.env.AUTH_API}/user/validate`,
+      `${process.env.AUTH_API}/users/validate`,
       null,
       {
         headers: { Authorization: `Bearer ${token}` },

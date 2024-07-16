@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const PORT = process.env.PORT || 8000;
 const mongoURI = process.env.MONGO_URI;
+const cors = require('cors')
 const { connectToMongoDB } = require("./connection");
 
 connectToMongoDB(mongoURI, {
@@ -12,7 +13,9 @@ connectToMongoDB(mongoURI, {
   .catch((err) => console.error(err));
 
 const app = express();
+app.use(cors())
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
 const categoryRoutes = require("./routes/category");
 const inventoryRoutes = require("./routes/inventory");

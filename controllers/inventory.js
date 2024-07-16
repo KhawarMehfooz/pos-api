@@ -13,12 +13,14 @@ const getAllProducts = async (req, res) => {
 
 const createNewProduct = async (req, res) => {
   const stockCheck = req.body.stockCheck === "on" ? 1 : 0;
+
   const product = new Product({
-    name: req.body.name,
-    price: req.body.price,
-    category: req.body.category,
+    name: req.body.productName,
+    price: req.body.productPrice,
+    barcode: Math.floor(Date.now() / 1000),
+    category: req.body.productCategory,
     image: req.file ? req.file.path : "uploads/default.jpg",
-    quantity: req.body.quantity,
+    quantity: req.body.productQuantity,
     stockCheck: stockCheck,
   });
 
@@ -72,13 +74,12 @@ const editProduct = async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
-
-    product.name = req.body.name || product.name;
-    product.price = req.body.price || product.price;
-    product.category = req.body.category || product.category;
+    product.name = req.body.productName !== undefined ? req.body.productName : product.name;
+    product.price = req.body.productPrice !== undefined ? req.body.productPrice : product.price;
+    product.category = req.body.productCategory !== undefined ? req.body.productCategory : product.category;
     product.image = req.file ? req.file.path : product.image;
-    product.quantity = req.body.quantity || product.quantity;
-    product.stockCheck = req.body.stockCheck || product.stockCheck;
+    product.quantity = req.body.productQuantity !== undefined ? req.body.productQuantity : product.quantity;
+    product.stockCheck = req.body.stockCheck !== undefined ? (req.body.stockCheck === "on" ? 1 : 0) : product.stockCheck;
 
     const updatedProduct = await product.save();
     return res.json(updatedProduct);
@@ -86,6 +87,7 @@ const editProduct = async (req, res) => {
     return res.status(400).json({ message: err.message });
   }
 };
+
 
 const deleteProduct = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
