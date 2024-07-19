@@ -23,7 +23,7 @@ const settingsSchema = mongoose.Schema({
     chargeVat: {
         type: String,
         required: true,
-        enum: ['0', '1'] // Corrected to string enum values
+        enum: ['0', '1']
     },
     vatPercentage: {
         type: Number,
