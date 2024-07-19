@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
+const fs = require('fs');
 
 const {
   getAllProducts,
@@ -12,9 +13,14 @@ const {
   deleteProduct,
 } = require("../controllers/inventory");
 
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/product-images");
+    const dir = "uploads/product-images";
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    cb(null, dir);
   },
   filename: (req, file, cb) => {
     cb(
@@ -23,6 +29,7 @@ const storage = multer.diskStorage({
     );
   },
 });
+
 
 const checkFileType = (file, cb) => {
   const filetypes = /jpg|jpeg|png|webp|svg/;

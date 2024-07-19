@@ -4,6 +4,7 @@ const PORT = process.env.PORT || 8000;
 const mongoURI = process.env.MONGO_URI;
 const cors = require('cors')
 const { connectToMongoDB } = require("./connection");
+const { authenticateToken } = require("./middlewares/auth");
 
 connectToMongoDB(mongoURI, {
   useNewUrlParser: true,
@@ -16,19 +17,19 @@ const app = express();
 app.use(cors())
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
+app.use(authenticateToken)
 
 const categoryRoutes = require("./routes/category");
 const inventoryRoutes = require("./routes/inventory");
 const customerRoutes = require('./routes/customer')
 const transactionRoutes = require('./routes/transaction')
-const { authenticateToken } = require("./middlewares/auth");
+const settingsRoutes = require('./routes/settings')
 
-app.use(authenticateToken);
-
-app.use("/", categoryRoutes);
-app.use("/", inventoryRoutes);
+app.use("/",categoryRoutes);
+app.use("/",inventoryRoutes);
 app.use("/",customerRoutes)
 app.use("/",transactionRoutes)
+app.use("/",settingsRoutes)
 
 app.get("/", (req, res) => {
   res.send("Hello World");

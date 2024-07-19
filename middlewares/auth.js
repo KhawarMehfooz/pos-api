@@ -1,9 +1,14 @@
 const axios = require("axios");
 
 const authenticateToken = async (req, res, next) => {
+  const publicPaths = ['/register', '/login'];
+  if (publicPaths.includes(req.path)) {
+    return next();
+  }
+
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
-  if (token == null) return res.sendStatus(401); // No token, unauthorized
+  if (token == null) return res.sendStatus(401);
 
   try {
     const response = await axios.post(
@@ -25,5 +30,4 @@ const authenticateToken = async (req, res, next) => {
     return res.sendStatus(500);
   }
 };
-
 module.exports = { authenticateToken };
