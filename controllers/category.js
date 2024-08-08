@@ -5,24 +5,31 @@ const Product = require('../models/Product');
 
 const getAllCategories = async (req, res) => {
   try {
-    const categories = await Category.find();
-    return res.json(categories);
+    const categories = await Category.find({userId: req.user.id}).select(['_id','userId','name']);
+    return res.json({categories: categories});
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    console.error(err.message)
+    return res.status(500).json({ message: 'An error occurred while fetching categories.' });
   }
 };
 
 
 const createNewCategory = async (req, res) => {
   const category = new Category({
-    categoryName: req.body.categoryName
+    userId: req.user.id,
+    name: req.body.categoryName
   });
 
   try {
     const newCategory = await category.save();
-    return res.status(201).json(newCategory);
+    return res.status(201).json({category: {
+      _id: newCategory._id,
+      userId: newCategory.userId,
+      name: newCategory.name
+    }});
   } catch (err) {
-    return res.status(400).json({ message: err.message });
+    console.error(err.message)
+    return res.status(400).json({ message: 'An error occurred while creating the category.' });
   }
 };
 
@@ -32,14 +39,18 @@ const getSingleCategory = async (req, res) => {
   }
 
   try {
-    const category = await Category.findById(req.params.id);
+    const category = await Category.findOne({
+      _id: req.params.id,
+      userId: req.user.id,
+    }).select(['_id','userId','name']);
     if (!category) {
       return res.status(404).json({ message: 'Category not found' });
     }
 
-    return res.json(category);
+    return res.json({category});
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    console.error(err.message)
+    return res.status(500).json({ message: 'An error occurred while fetching the category.' });
   }
 };
 
@@ -50,17 +61,26 @@ const editCategory = async (req, res) => {
   }
 
   try {
-    const cat = await Category.findById(req.params.id);
-    if (!cat) {
+    const category = await Category.findOne({
+      _id: req.params.id,
+      userId: req.user.id
+    });
+    if (!category) {
       return res.status(404).json({ message: 'Category Not Found!' });
     }
 
-    cat.categoryName = req.body.categoryName || cat.categoryName;
+    category.name = req.body.categoryName || category.name;
 
-    const updatedCat = await cat.save();
-    return res.json(updatedCat);
+    const updatedCategory = await category.save();
+    return res.json({category: {
+      _id: updatedCategory._id,
+      userId: updatedCategory.userId,
+      name: updatedCategory.name
+    }});
+
   } catch (err) {
-    return res.status(400).json({ message: err.message });
+    console.error(err.message)
+    return res.status(400).json({ message: 'An error occurred while updating the category' });
   }
 };
 
@@ -73,14 +93,22 @@ const deleteCategory = async (req, res) => {
   try {
     const categoryId = req.params.id;
 
-    const products = await Product.find({ category: categoryId });
+    const products = await Product.find({ 
+      categoryId: categoryId,
+      userId: req.params.id
+     });
 
-    if (products.length > 0) {
-      const productDeleteResult = await Product.deleteMany({ category: categoryId });
-      console.log(`Deleted ${productDeleteResult.deletedCount} products associated with the category.`);
+    if (products?.length > 0) {
+      const productDeleteResult = await Product.deleteMany({ 
+        category: categoryId, 
+        userId: req.user.id 
+      });
     }
 
-    const categoryDeleteResult = await Category.deleteOne({ _id: categoryId });
+    const categoryDeleteResult = await Category.deleteOne({ 
+      _id: categoryId,
+      userId: req.user.id 
+    });
     if (categoryDeleteResult.deletedCount === 0) {
       return res.status(404).json({ message: 'Category not found' });
     }
@@ -90,7 +118,8 @@ const deleteCategory = async (req, res) => {
       deletedProductsCount: products.length,
     });
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    console.error(err.message)
+    return res.status(500).json({ message: 'An error occurred while deleting the category.' });
   }
 };
 
